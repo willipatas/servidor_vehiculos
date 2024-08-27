@@ -1,17 +1,17 @@
-import express from "express";
+import express, { Router } from "express";
 import pool from "./database/db_connect";
+import { getUser } from "./controllers/usuarios_controller";
 
 require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT;
 
-app.get('/', async (req, res) =>{
-    const query = 'SELECT * from nuevos_usuarios';
-    const response = await pool.query(query);
-    console.log(response);
-    res.send('Hola mundo de los vehículos');
-});
+const usuariosRoutes = Router();
+
+usuariosRoutes.get('/nuevos_usuarios', getUser); 
+
+app.use(usuariosRoutes);
 
 app.listen(port, () => {
     console.log(`Se ha iniciado en el puerto ${port}`)
