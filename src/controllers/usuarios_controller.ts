@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import pool from "../database/db_connect";
 import { QueryResult } from "pg";
 import jwt from "jsonwebtoken"
@@ -18,6 +18,20 @@ export const generateToken = async (req: Request, response:Response): Promise<Re
     }
 };
 
+export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
+    const authHeaders = req.headers['authorization'];
+    const token = authHeaders && authHeaders.split(' ')[1];
+    if(!token) {
+        return res.status(401).json({error: 'Token no encontrado'})
+    }
+    jwt.verify(token, `${process.env.CLAVE_JWT}`, (err, user) => {
+        if(err){
+            return res.status(403).json({error: 'Token invalido' });  
+        }
+    });
+    next();
+}
+
 export const getUser = async (req: Request, res: Response): Promise<Response> => {
     try {
         const response: QueryResult = await pool.query('SELECT * FROM users;');
@@ -28,3 +42,25 @@ export const getUser = async (req: Request, res: Response): Promise<Response> =>
     }
 };
 
+export const createUser = async (req: Request, res: Response): Promise<Response> => {
+    const {nombre_cliente, correo_cliente, contrasena} = req.body;
+    if (nombre_cliente !== null && correo_cliente !== null && contrasena !== null){
+        try {
+            await pool.query('INSERT INTO clientes (nombre_cliente, correo_cliente, contrasena) values ($1, $2, $3)',
+                [nombre_cliente, correo_cliente, contrasena]
+            );
+            return res.status(201).json({
+                message: 'User created successfully',
+                category: {
+                    nombre_cliente,
+                    contrasena,
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json('Internal Server Error');
+        }
+    } else {
+        return res.status(500).json('Internal Server Error');
+    }
+};
