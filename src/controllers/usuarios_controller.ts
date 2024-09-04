@@ -32,28 +32,29 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     next();
 }
 
-export const getUser = async (req: Request, res: Response): Promise<Response> => {
+
+export const getClientes = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response: QueryResult = await pool.query('SELECT * FROM users;');
-        return res.status(200).json(response.rows);
+        const response: QueryResult = await pool.query('SELECT * FROM clientes');
+        return res.status(200).json(response.rows)
     } catch (error) {
         console.error(console);
-        return res.status(500).json('Error interno en el servidor')
+        return res.status(500).json('Internal Server Error');
     }
 };
 
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
-    const {nombre_cliente, correo_cliente, contrasena} = req.body;
-    if (nombre_cliente !== null && correo_cliente !== null && contrasena !== null){
+    const {nameUser, emailUser, password} = req.body;
+    if (nameUser !== null && emailUser !== null && password !== null){
         try {
             await pool.query('INSERT INTO clientes (nombre_cliente, correo_cliente, contrasena) values ($1, $2, $3)',
-                [nombre_cliente, correo_cliente, contrasena]
+                [nameUser, emailUser, password]
             );
             return res.status(201).json({
                 message: 'User created successfully',
                 category: {
-                    nombre_cliente,
-                    contrasena,
+                    nameUser,
+                    emailUser
                 }
             });
         } catch (error) {
@@ -61,6 +62,40 @@ export const createUser = async (req: Request, res: Response): Promise<Response>
             return res.status(500).json('Internal Server Error');
         }
     } else {
+        return res.status(500).json('Internal Server Error');
+    }
+};
+
+
+export const borrarCliente = async (req: Request, res: Response): Promise<Response> => {
+    const id =parseInt(req.params.id);
+        try {
+            await pool.query('DELETE FROM clientes WHERE id = $1', [id]);
+            return res.status(200).json(`El cliente con el id ${id} fue borrado con éxito.`);
+        } catch (error) {
+            console.error(error);
+            return res.status(500).json('Internal Server Error');
+        }
+};
+
+export const actualizarCliente = async (req: Request, res: Response): Promise<Response> => {
+    const id =parseInt(req.params.id);
+    const {nameUser, emailUser} = req.body;
+
+    try {
+        await pool.query('UPDATE clientes SET nombre_cliente = $1, correo_cliente = $2 WHERE id = $3',
+            [nameUser, emailUser, id]
+        );
+        return res.json({
+            message: `El cliente con el id ${id} fue actualizado con éxito.`,
+            cliente: {
+                id, 
+                nameUser,
+                emailUser
+            },
+        });
+    } catch (error) {
+        console.error(error);
         return res.status(500).json('Internal Server Error');
     }
 };
