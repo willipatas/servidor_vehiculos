@@ -4,12 +4,12 @@
   "description": "Este es un proyecto de TalentoTech sobre el uso de Express JS Node JS y TypeScript",
   "main": "index.js",
   "scripts": {
-    "start": "tsc && node lib/aplicacion.js",
+    "start": "tsc && node lib/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "http://github.comwillipatas/servidor_vehiculos.git"
+    "url": "https://github.com/willipatas/servidor_vehiculos"
   },
   "keywords": [
     "Express",
