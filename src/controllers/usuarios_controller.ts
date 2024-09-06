@@ -44,27 +44,35 @@ export const getClientes = async (req: Request, res: Response): Promise<Response
 };
 
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
-    const {nameUser, emailUser, password} = req.body;
-    if (nameUser !== null && emailUser !== null && password !== null){
+    const { nombre_cliente, correo_cliente, telefono_cliente, direccion_cliente, ciudad_cliente, contrasena } = req.body;
+
+    // Validar que los campos no estén vacíos o nulos
+    if (nombre_cliente && correo_cliente && telefono_cliente && direccion_cliente && ciudad_cliente && contrasena) {
         try {
-            await pool.query('INSERT INTO clientes (nombre_cliente, correo_cliente, contrasena) values ($1, $2, $3)',
-                [nameUser, emailUser, password]
+            // Inserción de todos los valores correspondientes a las columnas
+            await pool.query(
+                'INSERT INTO clientes (nombre_cliente, correo_cliente, telefono_cliente, direccion_cliente, ciudad_cliente, contrasena) VALUES ($1, $2, $3, $4, $5, $6)',
+                [nombre_cliente, correo_cliente, telefono_cliente, direccion_cliente, ciudad_cliente, contrasena]
             );
             return res.status(201).json({
                 message: 'User created successfully',
-                category: {
-                    nameUser,
-                    emailUser
+                user: {
+                    nombre_cliente, 
+                    correo_cliente, 
+                    telefono_cliente, 
+                    direccion_cliente, 
+                    ciudad_cliente
                 }
             });
         } catch (error) {
             console.error(error);
-            return res.status(500).json('Internal Server Error');
+            return res.status(500).json({ error: 'Internal Server Error' });
         }
     } else {
-        return res.status(500).json('Internal Server Error');
+        return res.status(400).json({ error: 'Todos los campos son requeridos.' });
     }
 };
+
 
 
 export const borrarCliente = async (req: Request, res: Response): Promise<Response> => {
