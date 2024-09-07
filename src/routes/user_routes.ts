@@ -5,7 +5,7 @@ import { authenticateToken } from "../middleware/authorization";
 export const userRoutes = Router();
 userRoutes.post('/api/login', generateToken);
 userRoutes.post('/nuevo_usuario', createUser);
-userRoutes.get('/clientes_registrados', authenticateToken, getClientes);
+userRoutes.get('/clientes_registrados', getClientes);
 userRoutes.delete('/borrarCliente/:id', authenticateToken, borrarCliente);
 userRoutes.put('/actualizarCliente/:id', authenticateToken, actualizarCliente)
 
