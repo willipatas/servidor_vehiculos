@@ -1,6 +1,7 @@
 import express, { Router } from "express";
 import { errorHandler } from "./middleware/error";
 import { userRoutes } from "./routes/user_routes";
+import { vehiculosRoutes } from "./routes/vehiculos_routes"
 import cors from "cors";
 
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(errorHandler);
 
 app.use(userRoutes);
+app.use(vehiculosRoutes);
 app.use(express.json());
 
 app.listen(port, () => {
