@@ -43,6 +43,17 @@ export const getClientes = async (req: Request, res: Response): Promise<Response
     }
 };
 
+export const getClientesById = async (req: Request, res: Response): Promise<Response> => {
+    const id = parseInt(req.params.id);
+    try {
+        const response: QueryResult = await pool.query('SELECT * FROM clientes WHERE id = $1', [id]);
+        return res.json(response.rows);
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json('Internal Server Error');
+    }
+};
+
 export const createUser = async (req: Request, res: Response): Promise<Response> => {
     const { nombre_cliente, correo_cliente, telefono_cliente, direccion_cliente, ciudad_cliente, contrasena } = req.body;
 
