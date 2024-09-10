@@ -32,10 +32,19 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     next();
 }
 
+export const getEmpleados = async (req: Request, res: Response): Promise<Response> => {
+    try {
+        const response: QueryResult = await pool.query('SELECT * FROM users ORDER BY id ASC');
+        return res.status(200).json(response.rows)
+    } catch (error) {
+        console.error(console);
+        return res.status(500).json('Internal Server Error');
+    }
+};
 
 export const getClientes = async (req: Request, res: Response): Promise<Response> => {
     try {
-        const response: QueryResult = await pool.query('SELECT * FROM clientes');
+        const response: QueryResult = await pool.query('SELECT * FROM clientes ORDER BY id ASC');
         return res.status(200).json(response.rows)
     } catch (error) {
         console.error(console);
@@ -99,18 +108,22 @@ export const borrarCliente = async (req: Request, res: Response): Promise<Respon
 
 export const actualizarCliente = async (req: Request, res: Response): Promise<Response> => {
     const id =parseInt(req.params.id);
-    const {nameUser, emailUser} = req.body;
+    const {nombre_cliente, correo_cliente, telefono_cliente, direccion_cliente, ciudad_cliente, contrasena} = req.body;
 
     try {
-        await pool.query('UPDATE clientes SET nombre_cliente = $1, correo_cliente = $2 WHERE id = $3',
-            [nameUser, emailUser, id]
+        await pool.query('UPDATE clientes SET nombre_cliente = $1, correo_cliente = $2, telefono_cliente = $3, direccion_cliente = $4, ciudad_cliente = $5, contrasena = $6 WHERE id = $7',
+            [nombre_cliente, correo_cliente, telefono_cliente, direccion_cliente, ciudad_cliente, contrasena, id]
         );
         return res.json({
             message: `El cliente con el id ${id} fue actualizado con éxito.`,
             cliente: {
-                id, 
-                nameUser,
-                emailUser
+                id,
+                nombre_cliente, 
+                correo_cliente, 
+                telefono_cliente, 
+                direccion_cliente, 
+                ciudad_cliente, 
+                contrasena
             },
         });
     } catch (error) {
